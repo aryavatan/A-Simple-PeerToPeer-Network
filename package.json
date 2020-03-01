@@ -1,0 +1,14 @@
+{
+  "name": "avatanab-se3314b-assignment2",
+  "version": "1.0.0",
+  "description": "A peer-to-peer network",
+  "main": "peer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arya Vatan-Abadi",
+  "license": "ISC",
+  "dependencies": {
+    "minimist": "^1.2.0"
+  }
+}
