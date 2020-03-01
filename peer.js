@@ -14,7 +14,8 @@ net.bufferSize = 300000;
 
 
 // Peer table
-let maxpeers = 2;
+let currPeers = 0;
+let maxPeers = 2;
 let peerTable = [];
 
 
@@ -26,7 +27,7 @@ console.log('\n\n\nPeer-' + PORT + ' is started and is listening on ' + HOST + '
 
 // If max peers is provided
 if(argv.n != undefined){
-	maxpeers = parseInt(argv.n);
+	maxPeers = parseInt(argv.n);
 }
 
 
@@ -36,14 +37,14 @@ if(argv.p != undefined){
 	let port = argv.p.split(":")[1];
 	let socket = new net.Socket();
 	socket.connect(port, host, () => {
-		handler.joinClient(socket, host, port);
+		handler.joinClient(socket, currPeers, maxPeers, peerTable, host, port);
 	});
 }
 
 
 // On connecting with other peer
 peer.on('connection', function (sock) {
-	handler.handleClientJoining(sock, maxpeers, peerTable); //called for each client joining
+	handler.handleClientJoining(sock, currPeers, maxPeers, peerTable); //called for each client joining
 });
 
 
