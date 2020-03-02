@@ -13,10 +13,8 @@ net.bytesWritten = 300000;
 net.bufferSize = 300000;
 
 
-// Peer table
-let currPeers = 0;
-let maxPeers = 2;
-let peerTable = [];
+// Initialize Singleton
+singleton.init();
 
 
 // Start peer
@@ -27,7 +25,8 @@ console.log('\n\n\nPeer-' + PORT + ' is started and is listening on ' + HOST + '
 
 // If max peers is provided
 if(argv.n != undefined){
-	maxPeers = parseInt(argv.n);
+    let maxPeers = parseInt(argv.n);
+    singleton.setMaxPeers(maxPeers);
 }
 
 
@@ -37,14 +36,14 @@ if(argv.p != undefined){
 	let port = argv.p.split(":")[1];
 	let socket = new net.Socket();
 	socket.connect(port, host, () => {
-		handler.joinClient(socket, currPeers, maxPeers, peerTable, host, port);
+		handler.joinClient(socket, host, port);
 	});
 }
 
 
 // On connecting with other peer
-peer.on('connection', function (sock) {
-	handler.handleClientJoining(sock, currPeers, maxPeers, peerTable); //called for each client joining
+peer.on('connection', function (socket) {
+	handler.handleClientJoining(socket); //called for each client joining
 });
 
 

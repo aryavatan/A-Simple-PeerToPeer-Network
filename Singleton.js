@@ -1,6 +1,11 @@
 var timer = getRndInteger(1, 999);
 var port = getRndInteger(1024, 65535);
 
+// Peer table data
+let currPeers = 0;
+let maxPeers = 2;
+let peerTable = [];
+
 module.exports = {
     init: function () {
         setInterval(function () {
@@ -34,8 +39,57 @@ module.exports = {
     //--------------------------
     getTimestamp: function () {
         return timer;
-    }
+    },
 
+    //--------------------------
+    //getMaxPeers: return the current max peers value
+    //--------------------------
+    getMaxPeers: function () {
+        return maxPeers;
+    },
+
+    //--------------------------
+    //setMaxPeers: set and return the max peers value
+    //--------------------------
+    setMaxPeers: function (_maxPeers) {
+        maxPeers = _maxPeers;
+        return maxPeers;
+    },
+
+    //--------------------------
+    //getPeerTable: return the current peer table
+    //--------------------------
+    getPeerTable: function () {
+        return peerTable;
+    },
+
+    //--------------------------
+    //addToPeerTable: add a value to the peer table
+    //--------------------------
+    addToPeerTable: function (peer) {
+        peerTable.push(peer);
+    },
+
+    //--------------------------
+    //getNumPeers: return the current number of peers
+    //--------------------------
+    getNumPeers: function () {
+        return currPeers;
+    },
+
+    //--------------------------
+    //incrementNumPeers: increment the current number of peers
+    //--------------------------
+    incrementNumPeers: function () {
+        return ++currPeers;
+    },
+
+    //--------------------------
+    //incrementNumPeers: decrement the current number of peers
+    //--------------------------
+    decrementNumPeers: function () {
+        return --currPeers;
+    }
 
 };
 

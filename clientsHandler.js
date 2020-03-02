@@ -4,12 +4,14 @@ let singleton = require('./singleton');
 
 module.exports = {
 
-	handleClientJoining: function (socket, currPeers, maxPeers, peerTable) {
+	handleClientJoining: function (socket) {
 		socket.on('data', (data) => {
+            let currPeers = singleton.getNumPeers();
+            let maxPeers = singleton.getMaxPeers();
+            let peerTable = singleton.getPeerTable();
+
 			let version = data.slice(0, 2).readUInt16BE(0);
-			// let msgType = data.slice(3).readUInt8(0);
 			let sender = data.slice(4, 7).readUInt16BE(0);
-			// let numPeers = data.slice(8, 11).readUInt16BE(0);
 
 			// Get peerTable information to send
 			let numPeers = 0;
@@ -23,12 +25,12 @@ module.exports = {
 			if (version == 3314) {
 				if (currPeers < maxPeers) {  // Welcome message
 					console.log("Connected from peer " + sender);
-                    currPeers++;
+                    currPeers = singleton.incrementNumPeers();
                     console.log('Current Peers:' + currPeers) // DEV LOG
 
 					// Add new peer to peerTable if there is space
 					if (peerTable.length < (maxPeers - 1)) {
-                        peerTable.push(sender);
+                        peerTable.push(sender); //MAYBE NEED TO USE SINGLETON METHOD FOR PUSHING
 					}
 
 					msgType = 1; 
@@ -53,8 +55,8 @@ module.exports = {
 		});
 	},
 
-	joinClient: function (socket, currPeers, maxPeers, peerTable, host, port) {
-		console.log("Connected to peer " + host + ':' + port);
+	joinClient: function (socket, host, port) {
+        console.log("Connected to peer " + host + ':' + port);
 
 		// Send 'Hello' packet to peer
 		PTPpacket.init(3314, 1, singleton.getPort(), 0, null, null);
@@ -89,13 +91,13 @@ module.exports = {
 				}
 				
 				if(msgType == 1) {  // Welcome message
-					currPeers++;
-					peerTable.push(sender);
+                    singleton.incrementNumPeers();
+                    singleton.addToPeerTable(sender);
 				}
 				else if(msgType == 2){  // Redirect message
 					console.log('Join redirected, trying to connect to the peer above.');
 					socket.connect(port, host, () => {
-						this.joinClient(socket,currPeers, maxPeers, peerTable, peerIP, peerPort);
+						this.joinClient(socket, peerIP, peerPort);
 					});	
 				}
 			}
