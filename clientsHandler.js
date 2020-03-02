@@ -7,37 +7,40 @@ module.exports = {
 	handleClientJoining: function (socket, currPeers, maxPeers, peerTable) {
 		socket.on('data', (data) => {
 			let version = data.slice(0, 2).readUInt16BE(0);
-			let msgType = data.slice(3).readUInt8(0);
+			// let msgType = data.slice(3).readUInt8(0);
 			let sender = data.slice(4, 7).readUInt16BE(0);
-			let numPeers = data.slice(8, 11).readUInt16BE(0);
+			// let numPeers = data.slice(8, 11).readUInt16BE(0);
+
+			// Get peerTable information to send
+			let numPeers = 0;
+			let peerPort, peerIP, msgType;
+			if(peerTable.length > 0){
+				peerIP = '127.0.0.1';
+				peerPort = peerTable[0];
+				numPeers = 1;
+			}
 
 			if (version == 3314) {
 				if (currPeers < maxPeers) {  // Welcome message
 					console.log("Connected from peer " + sender);
 					currPeers++;
 
-					// Get peerTable information to send
-					let numPeers = 0;
-					let peerPort, peerIP;
-					if(peerTable.length > 0){
-						peerIP = '127.0.0.1';
-						peerPort = peerTable[0];
-						numPeers = 1;
-					}
-
 					// Add new peer to peerTable if there is space
 					if (peerTable.length < (maxPeers - 1)) {
 						peerTable.push(sender);
 					}
 
-					// Senc "Welcome" ACK message back to new peer
-					PTPpacket.init(3314, 1, portGenerator.getPort(), numPeers, peerPort, peerIP);
-					let ack = PTPpacket.getPacket();
-					socket.write(ack);
+					msgType = 1; 
 				}
 				else{  // Redirect message
-
+					console.log('Peer table full: ' + sender + ' redirected');
+					msgType = 2;
 				}
+
+				// Send ACK message back to peer
+				PTPpacket.init(3314, msgType, portGenerator.getPort(), numPeers, peerPort, peerIP);
+				let ack = PTPpacket.getPacket();
+				socket.write(ack);
 			}
 
 		});
@@ -63,10 +66,27 @@ module.exports = {
 			let msgType = data.slice(3).readUInt8(0);
 			let sender = data.slice(4, 7).readUInt16BE(0);
 			let numPeers = data.slice(8, 11).readUInt16BE(0);
+			let peerPort, peerIP;
 
 			if(sender == port){
 				console.log('Received ack from ' + host + ':' + sender);
 				
+				if(numPeers > 0){
+					peerPort = data.slice(14, 15).readUInt8(0);
+					peerIP = data.slice(16, 19).readUInt16BE(0);
+					console.log('\tWhich is peered with ' + peerIP + ':' + peerPort);
+				}
+				
+				if(msgType == 1) {  // Welcome message
+					currPeers++;
+					peerTable.push(sender);
+				}
+				else if(msgType == 2){  // Redirect message
+					console.log('Join redirected, trying to connect to the peer above.');
+					socket.connect(port, host, () => {
+						this.joinClient(socket,currPeers, maxPeers, peerTable, peerIP, peerPort);
+					});	
+				}
 			}
 		});
 	}
