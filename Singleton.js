@@ -1,5 +1,5 @@
 var timer = getRndInteger(1, 999);
-var sequenceNumber = getRndInteger(1, 999);
+var port = getRndInteger(1024, 65535);
 
 module.exports = {
     init: function () {
@@ -15,11 +15,18 @@ module.exports = {
     },
 
     //--------------------------
-    //getSequenceNumber: return the current sequence number + 1
+    //getPort: return the port value of the peer
     //--------------------------
-    getSequenceNumber: function () {
-        // Increment sequence number for next function call
-        return sequenceNumber++;
+    getPort: function () {
+        return port;
+    },
+
+    //--------------------------
+    //generatePort: generate and return a new port value for the peer
+    //--------------------------
+    generatePort: function () {
+        port = getRndInteger(1024, 65535);
+        return port;
     },
 
     //--------------------------

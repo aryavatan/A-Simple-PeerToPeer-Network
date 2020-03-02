@@ -1,6 +1,6 @@
 // Required Modules
 var PTPpacket = require('./cPTPpacket');
-let portGenerator = require('./portGenerator');
+let singleton = require('./singleton');
 
 module.exports = {
 
@@ -39,7 +39,7 @@ module.exports = {
 				}
 
 				// Send ACK message back to peer
-				PTPpacket.init(3314, msgType, portGenerator.getPort(), numPeers, peerPort, peerIP);
+				PTPpacket.init(3314, msgType, singleton.getPort(), numPeers, peerPort, peerIP);
 				let ack = PTPpacket.getPacket();
 				socket.write(ack);
 			}
@@ -57,7 +57,7 @@ module.exports = {
 		console.log("Connected to peer " + host + ':' + port);
 
 		// Send 'Hello' packet to peer
-		PTPpacket.init(3314, 1, portGenerator.getPort(), 0, null, null);
+		PTPpacket.init(3314, 1, singleton.getPort(), 0, null, null);
 		let hello = PTPpacket.getPacket();
 		socket.write(hello);
 

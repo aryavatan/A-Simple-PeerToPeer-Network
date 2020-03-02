@@ -1,13 +1,13 @@
 // Required modules
 let net = require('net');
 var argv = require('minimist')(process.argv.slice(2));
-let portGenerator = require('./portGenerator');
+let singleton = require('./singleton');
 let handler = require('./clientsHandler');
 
 
 // Host and Port initialization
 const HOST = '127.0.0.1';
-let PORT = portGenerator.generatePort();
+let PORT = singleton.generatePort();
 
 net.bytesWritten = 300000;
 net.bufferSize = 300000;
