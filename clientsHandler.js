@@ -16,18 +16,19 @@ module.exports = {
 			let peerPort, peerIP, msgType;
 			if(peerTable.length > 0){
 				peerIP = '127.0.0.1';
-				peerPort = peerTable[0];
+                peerPort = peerTable[0];
 				numPeers = 1;
 			}
 
 			if (version == 3314) {
 				if (currPeers < maxPeers) {  // Welcome message
 					console.log("Connected from peer " + sender);
-					currPeers++;
+                    currPeers++;
+                    console.log('Current Peers:' + currPeers) // DEV LOG
 
 					// Add new peer to peerTable if there is space
 					if (peerTable.length < (maxPeers - 1)) {
-						peerTable.push(sender);
+                        peerTable.push(sender);
 					}
 
 					msgType = 1; 
@@ -69,11 +70,21 @@ module.exports = {
 			let peerPort, peerIP;
 
 			if(sender == port){
-				console.log('Received ack from ' + host + ':' + sender);
+				console.log('\tReceived ack from ' + host + ':' + sender);
 				
 				if(numPeers > 0){
-					peerPort = data.slice(14, 15).readUInt8(0);
-					peerIP = data.slice(16, 19).readUInt16BE(0);
+                    peerPort = data.slice(14, 16).readUInt16BE(0);
+
+                    // Get peer IP address one byte at a time
+                    peerIP = '';
+                    for(let i = 16; i < 20; i++){
+                        let byte = data.slice(i).readUInt8(0);
+                        peerIP += byte;
+                        if(i < 19){
+                            peerIP += '.';
+                        }
+                    }
+
 					console.log('\tWhich is peered with ' + peerIP + ':' + peerPort);
 				}
 				

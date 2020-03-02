@@ -5,7 +5,10 @@ var sender = Buffer.alloc(4);
 var numPeers = Buffer.alloc(4);
 var reserved; // = Buffer.alloc(2)
 var peerPort; // = Buffer.alloc(2)
-var peerIP; // = Buffer.alloc(4)
+var peerIP1; // = Buffer.alloc(1)
+var peerIP2; // = Buffer.alloc(1)
+var peerIP3; // = Buffer.alloc(1)
+var peerIP4; // = Buffer.alloc(1)
 var packet;
 
 module.exports = {
@@ -25,12 +28,20 @@ module.exports = {
             peerPort = Buffer.alloc(2);
             peerPort.writeUInt16BE(_peerPort);
 
-            peerIP = Buffer.alloc(4);
-            peerIP.writeUInt16BE(_peerIP);
+            // Write the segments of the IP address as one byte each
+            let peerIPsegments = _peerIP.split('.');
+            peerIP1 = Buffer.alloc(1);
+            peerIP1.writeUInt8(peerIPsegments[0]);
+            peerIP2 = Buffer.alloc(1);
+            peerIP2.writeUInt8(peerIPsegments[1]);
+            peerIP3 = Buffer.alloc(1);
+            peerIP3.writeUInt8(peerIPsegments[2]);
+            peerIP4 = Buffer.alloc(1);
+            peerIP4.writeUInt8(peerIPsegments[3]);
 
-            length += reserved.length + peerPort.length + peerIP.length;
+            length += reserved.length + peerPort.length + peerIP1.length + peerIP2.length + peerIP3.length + peerIP4.length;
 
-            packet = Buffer.concat([version,msgType,sender,numPeers,reserved,peerPort,peerIP], length);
+            packet = Buffer.concat([version,msgType,sender,numPeers,reserved,peerPort,peerIP1,peerIP2,peerIP3,peerIP4], length);
         }
         else{
             packet = Buffer.concat([version,msgType,sender,numPeers], length);
