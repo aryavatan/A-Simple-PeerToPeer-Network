@@ -1,5 +1,5 @@
 var timer = getRndInteger(1, 999);
-var port = getRndInteger(1024, 65535);
+var port;
 
 // Peer table data
 let currPeers = 0;
@@ -27,11 +27,10 @@ module.exports = {
     },
 
     //--------------------------
-    //generatePort: generate and return a new port value for the peer
+    //setPort: set new port value for the peer
     //--------------------------
-    generatePort: function () {
-        port = getRndInteger(1024, 65535);
-        return port;
+    setPort: function (_port) {
+        port = _port;
     },
 
     //--------------------------

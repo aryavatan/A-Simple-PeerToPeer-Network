@@ -5,9 +5,9 @@ let singleton = require('./singleton');
 let handler = require('./clientsHandler');
 
 
-// Host and Port initialization
+// Host and Port variables
 const HOST = '127.0.0.1';
-let PORT = singleton.generatePort();
+let PORT;
 
 net.bytesWritten = 300000;
 net.bufferSize = 300000;
@@ -19,8 +19,11 @@ singleton.init();
 
 // Start peer
 let peer = net.createServer();
-peer.listen(PORT, HOST);
-console.log('\n\n\nPeer-' + PORT + ' is started and is listening on ' + HOST + ':' + PORT);
+peer.listen(0, HOST, function() {
+	PORT = peer.address().port;
+	singleton.setPort(PORT);
+	console.log('\n\n\nPeer-' + PORT + ' is started and is listening on ' + HOST + ':' + PORT);
+});
 
 
 // If max peers is provided
