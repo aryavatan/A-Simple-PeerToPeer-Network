@@ -66,10 +66,10 @@ module.exports = {
 	},
 
 	joinClient: function (socket, host, port) {
-        console.log("Connected to peer " + host + ':' + port);
+        console.log("Connected to peer " + host + ':' + port + ' at timestamp: ' + singleton.getTimestamp());
 
 		// Send 'Hello' packet to peer
-		PTPpacket.init(3314, 1, singleton.getPort(), 0, null, null);
+		PTPpacket.init(singleton.getVersion(), 1, singleton.getPort(), 0, null, null);
 		let hello = PTPpacket.getPacket();
 		socket.write(hello);
 
@@ -81,7 +81,7 @@ module.exports = {
 			let numPeers = data.slice(8, 11).readUInt16BE(0);
 			let peerPort, peerIP;
 
-			if(sender == port){
+			if(version == 3314 && sender == port){
 				console.log('\tReceived ack from ' + host + ':' + sender);
 				
 				if(numPeers > 0){

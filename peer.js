@@ -33,6 +33,14 @@ if(argv.n != undefined){
 }
 
 
+// If version is provided
+if(argv.v != undefined){
+    // Will send Hello packet with this version, 
+    // if version != 3314, the other peer will not respond
+    singleton.setVersion(parseInt(argv.v));
+}
+
+
 // Peer to join is provided
 if(argv.p != undefined){
 	let host = argv.p.split(":")[0];

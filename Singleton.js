@@ -6,6 +6,9 @@ let currPeers = 0;
 let maxPeers = 2;
 let peerTable = [];
 
+// Version flag (3314 by default, changed if version flag is provided)
+let version = 3314;
+
 module.exports = {
     init: function () {
         setInterval(function () {
@@ -88,6 +91,20 @@ module.exports = {
     //--------------------------
     decrementNumPeers: function () {
         return --currPeers;
+    },
+
+    //--------------------------
+    //getVersion: return the version of cPTPpacket used by the peer
+    //--------------------------
+    getVersion: function () {
+        return version;
+    },
+
+    //--------------------------
+    //setVersion: set the version of cPTPpacket used by the peer
+    //--------------------------
+    setVersion: function (_version) {
+        version = _version;
     }
 
 };
