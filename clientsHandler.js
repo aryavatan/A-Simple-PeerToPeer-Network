@@ -1,6 +1,8 @@
 // Required Modules
 var PTPpacket = require('./cPTPpacket');
 let singleton = require('./singleton');
+let net = require('net');
+
 
 module.exports = {
 
@@ -11,7 +13,7 @@ module.exports = {
             let peerTable = singleton.getPeerTable();
 
 			let version = data.slice(0, 2).readUInt16BE(0);
-			let sender = data.slice(4, 7).readUInt16BE(0);
+            let sender = data.slice(4, 7).readUInt16BE(0);
 
 			// Get peerTable information to send
 			let numPeers = 0;
@@ -26,11 +28,10 @@ module.exports = {
 				if (currPeers < maxPeers) {  // Welcome message
 					console.log("Connected from peer " + sender);
                     currPeers = singleton.incrementNumPeers();
-                    console.log('Current Peers:' + currPeers) // DEV LOG
 
 					// Add new peer to peerTable if there is space
 					if (peerTable.length < (maxPeers - 1)) {
-                        peerTable.push(sender); //MAYBE NEED TO USE SINGLETON METHOD FOR PUSHING
+                        peerTable.push(sender);
 					}
 
 					msgType = 1; 
@@ -104,8 +105,11 @@ module.exports = {
                     singleton.addToPeerTable(sender);
 				}
 				else if(msgType == 2){  // Redirect message
-					console.log('Join redirected, trying to connect to the peer above.');
-					socket.connect(port, host, () => {
+                    console.log('Join redirected, trying to connect to the peer above.');
+
+                    // Create new socket and connect to peer in redirect message
+                    socket = new net.Socket()
+					socket.connect(peerPort, peerIP, () => {
 						this.joinClient(socket, peerIP, peerPort);
 					});	
 				}
