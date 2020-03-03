@@ -53,6 +53,15 @@ module.exports = {
 			console.log('connection is closed');
 			// console.log('Client-' + port + ' closed the connection.');
 		});
+
+		// Socket Error
+		socket.on("error", (error) => {
+			// If error is caused my abruptly closing socket, do nothing 
+			if(error.code != 'ECONNRESET'){
+				// Otherwise, throw the error
+				throw error;
+			}
+		});
 	},
 
 	joinClient: function (socket, host, port) {
