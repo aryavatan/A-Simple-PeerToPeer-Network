@@ -1,5 +1,7 @@
 var timer = getRndInteger(1, 999);
 var port;
+var host;
+var initStr = false;
 
 // Peer table data
 let currPeers = 0;
@@ -105,6 +107,33 @@ module.exports = {
     //--------------------------
     setVersion: function (_version) {
         version = _version;
+    },
+
+    //--------------------------
+    //setHost: set the host of the peer
+    //--------------------------
+    setHost: function (_host) {
+        host = _host;
+    },
+
+    //--------------------------
+    //setHost: get the host of the peer
+    //--------------------------
+    getHost: function () {
+        return host;
+    },
+
+    //--------------------------
+    //printInitString: prints initial server string if it has not already been printed
+    //--------------------------
+    printInitString: function (firstLog) {
+        if(initStr == true){
+            return;
+        }
+        initStr = true;
+        let string = 'This peer address is ' + host + ':' + port;
+        if (firstLog == true) string = '\n\n\n' + string;
+        console.log(string);
     }
 
 };

@@ -3,6 +3,10 @@ var PTPpacket = require('./cPTPpacket');
 let singleton = require('./singleton');
 let net = require('net');
 
+// // Project Folder
+// var path = require('path');
+// var folder = path.dirname(require.main.filename);
+
 
 module.exports = {
 
@@ -19,14 +23,14 @@ module.exports = {
 			let numPeers = 0;
 			let peerPort, peerIP, msgType;
 			if(peerTable.length > 0){
-				peerIP = '127.0.0.1';
+				peerIP = singleton.getHost();
                 peerPort = peerTable[0];
 				numPeers = 1;
 			}
 
 			if (version == 3314) {
 				if (currPeers < maxPeers) {  // Welcome message
-					console.log("Connected from peer " + sender);
+                    console.log("Connected from peer " + (socket.remotePort-1)); // socket.remotePort always returns the port+1 on my machine, not sure why but this fixes that
                     currPeers = singleton.incrementNumPeers();
 
 					// Add new peer to peerTable if there is space
@@ -37,7 +41,7 @@ module.exports = {
 					msgType = 1; 
 				}
 				else{  // Redirect message
-					console.log('Peer table full: ' + sender + ' redirected');
+					console.log('Peer table full: ' + peerIP + ':' + sender + ' redirected');
 					msgType = 2;
 				}
 
@@ -51,8 +55,7 @@ module.exports = {
 
 		// Socket Close 
 		socket.on('close', (data) => {
-			console.log('connection is closed');
-			// console.log('Client-' + port + ' closed the connection.');
+			// Do Nothing
 		});
 
 		// Socket Error
@@ -66,7 +69,8 @@ module.exports = {
 	},
 
 	joinClient: function (socket, host, port) {
-        console.log("Connected to peer " + host + ':' + port + ' at timestamp: ' + singleton.getTimestamp());
+        console.log("\n\n\nConnected to peer " + host + ':' + port + ' at timestamp: ' + singleton.getTimestamp());
+        singleton.printInitString(false);  // Print peer listening string
 
 		// Send 'Hello' packet to peer
 		PTPpacket.init(singleton.getVersion(), 1, singleton.getPort(), 0, null, null);

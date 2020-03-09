@@ -15,14 +15,17 @@ net.bufferSize = 300000;
 
 // Initialize Singleton
 singleton.init();
+singleton.setHost(HOST);
 
 
 // Start peer
 let peer = net.createServer();
 peer.listen(0, HOST, function() {
 	PORT = peer.address().port;
-	singleton.setPort(PORT);
-	console.log('\n\n\nPeer-' + PORT + ' is started and is listening on ' + HOST + ':' + PORT);
+    singleton.setPort(PORT);
+    if(argv.p == undefined){
+        singleton.printInitString(true);
+    }
 });
 
 
@@ -48,7 +51,7 @@ if(argv.p != undefined){
 	let socket = new net.Socket();
 	socket.connect(port, host, () => {
 		handler.joinClient(socket, host, port);
-	});
+    });
 }
 
 
